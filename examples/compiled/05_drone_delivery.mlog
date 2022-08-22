@@ -1,0 +1,179 @@
+set targetVault vault1
+set resource0 @copper
+set resource1 @lead
+set resource2 @metaglass
+set resource3 @graphite
+set resource4 @sand
+set resource5 @coal
+set resource6 @titanium
+set resource7 @thorium
+set resource8 @scrap
+set resource9 @silicon
+set resource10 @plastanium
+set resource11 @phase-fabric
+set resource12 @surge-alloy
+set resource13 @spore-pod
+set resource14 @blast-compound
+set resource15 @pyratite
+set lowestResourceName null
+set resToDeliver null
+set minRes 600
+set stopDrawingFromCore 500
+ulocate building core false @copper coreX coreY found targetCore
+jump 32 equal found true
+set targetCore nucleus1
+jump 29 notEqual targetCore null
+set targetCore foundation1
+jump 29 notEqual targetCore null
+set message "No core found"
+jump 178 equal 1 1
+set message "Core found through link"
+sensor coreX targetCore @x
+sensor coreY targetCore @y
+set _ "1"
+sensor resourceStored targetVault resource0
+sensor atCore targetCore resource0
+jump 39 lessThan atCore stopDrawingFromCore
+jump 39 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource0
+set _ true # empty statement just to skip
+sensor resourceStored targetVault resource1
+sensor atCore targetCore resource1
+jump 46 lessThan atCore stopDrawingFromCore
+jump 46 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource1
+set _ true # empty statement just to skip
+sensor resourceStored targetVault resource2
+sensor atCore targetCore resource2
+jump 53 lessThan atCore stopDrawingFromCore
+jump 53 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource2
+set _ true # empty statement just to skip
+sensor resourceStored targetVault resource3
+sensor atCore targetCore resource3
+jump 60 lessThan atCore stopDrawingFromCore
+jump 60 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource3
+set _ true # empty statement just to skip
+sensor resourceStored targetVault resource4
+sensor atCore targetCore resource4
+jump 67 lessThan atCore stopDrawingFromCore
+jump 67 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource4
+set _ true # empty statement just to skip
+sensor resourceStored targetVault resource5
+sensor atCore targetCore resource5
+jump 74 lessThan atCore stopDrawingFromCore
+jump 74 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource5
+set _ true # empty statement just to skip
+sensor resourceStored targetVault resource6
+sensor atCore targetCore resource6
+jump 81 lessThan atCore stopDrawingFromCore
+jump 81 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource6
+set _ true # empty statement just to skip
+sensor resourceStored targetVault resource7
+sensor atCore targetCore resource7
+jump 88 lessThan atCore stopDrawingFromCore
+jump 88 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource7
+set _ true # empty statement just to skip
+sensor resourceStored targetVault resource8
+sensor atCore targetCore resource8
+jump 95 lessThan atCore stopDrawingFromCore
+jump 95 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource8
+set _ true # empty statement just to skip
+sensor resourceStored targetVault resource9
+sensor atCore targetCore resource9
+jump 102 lessThan atCore stopDrawingFromCore
+jump 102 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource9
+set _ true # empty statement just to skip
+sensor resourceStored targetVault resource10
+sensor atCore targetCore resource10
+jump 109 lessThan atCore stopDrawingFromCore
+jump 109 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource10
+set _ true # empty statement just to skip
+sensor resourceStored targetVault resource11
+sensor atCore targetCore resource11
+jump 116 lessThan atCore stopDrawingFromCore
+jump 116 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource11
+set _ true # empty statement just to skip
+sensor resourceStored targetVault resource12
+sensor atCore targetCore resource12
+jump 123 lessThan atCore stopDrawingFromCore
+jump 123 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource12
+set _ true # empty statement just to skip
+sensor resourceStored targetVault resource13
+sensor atCore targetCore resource13
+jump 130 lessThan atCore stopDrawingFromCore
+jump 130 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource13
+set _ true # empty statement just to skip
+sensor resourceStored targetVault resource14
+sensor atCore targetCore resource14
+jump 137 lessThan atCore stopDrawingFromCore
+jump 137 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource14
+set _ true # empty statement just to skip
+sensor resourceStored targetVault resource15
+sensor atCore targetCore resource15
+jump 144 lessThan atCore stopDrawingFromCore
+jump 144 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource15
+set _ true # empty statement just to skip
+set resToDeliver lowestResourceName
+jump 178 equal resToDeliver null
+set repetitions 10
+set _ "1"
+op sub repetitions repetitions 1
+jump 178 equal repetitions 0
+ubind @poly
+sensor ctrl @unit @controller
+jump 155 equal ctrl unit # not free
+jump 178 ctrl notEqual ctrl this # not me either
+set _ "1"
+sensor itemcCo @unit @totalItems
+jump 169 equal itemcCo 0
+jump 159 equal 0 0
+set procName "Drop off"
+sensor carryItem @unit @firstItem
+sensor resourceStored targetVault carryItem
+jump 174 greaterThan resourceStored 950
+sensor vaultX targetVault @x
+sensor vaultY targetVault @y
+sensor totalItems @unit @totalItems
+ucontrol approach vaultX vaultY 3 0 0
+ucontrol itemDrop targetVault totalItems 0 0 0
+jump 148 equal 0 0
+set procName "Pick up"
+jump 178 equal resToDeliver null
+ucontrol approach coreX coreY 7 0 0
+ucontrol itemTake targetCore resToDeliver 222 0 0
+jump 148 equal 0 0
+ucontrol approach coreX coreY 7 0 0
+sensor totalItems @unit @totalItems
+ucontrol itemDrop targetCore totalItems 0 0 0
+jump 178 equal 0 0
+end

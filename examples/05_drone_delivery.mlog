@@ -1,0 +1,118 @@
+set targetVault vault1
+# set resources
+set resource0 @copper 
+set resource1 @lead 
+set resource2 @metaglass
+set resource3 @graphite
+set resource4 @sand
+set resource5 @coal
+set resource6 @titanium
+set resource7 @thorium
+set resource8 @scrap
+set resource9 @silicon
+set resource10 @plastanium
+set resource11 @phase-fabric
+set resource12 @surge-alloy
+set resource13 @spore-pod
+set resource14 @blast-compound
+set resource15 @pyratite
+
+set lowestResourceName null
+set resToDeliver null
+
+#find lowest resource that still lower than 600
+set minRes 600
+set stopDrawingFromCore 500
+
+# find core
+ulocate building core false @copper coreX coreY found targetCore
+jump CORE_FOUND equal found true
+# fallback 
+set targetCore nucleus1
+jump CORE_FOUND_THROUGH_LINK notEqual targetCore null
+set targetCore foundation1
+jump CORE_FOUND_THROUGH_LINK notEqual targetCore null
+# oh fuck
+set message "No core found"
+jump END equal 1 1
+CORE_FOUND_THROUGH_LINK: set message "Core found through link"
+sensor coreX targetCore @x
+sensor coreY targetCore @y
+
+
+CORE_FOUND: set _ "1"
+
+STARTLOOP resNum 16 # 0 to 15
+    sensor resourceStored targetVault resource$resNum
+    sensor atCore targetCore resource$resNum
+    jump SKIPRES$resNum lessThan atCore stopDrawingFromCore
+    jump SKIPRES$resNum greaterThan resourceStored minRes
+    set minRes resourceStored
+    set lowestResourceName resource$resNum
+    SKIPRES$resNum: set _ true # empty statement just to skip 
+ENDLOOP resNum
+    
+
+set resToDeliver lowestResourceName 
+
+jump END equal resToDeliver null
+
+# transport resources
+
+set repetitions 10
+
+TRANSPORT_RESOURCES: set _ "1"
+op sub repetitions repetitions 1 
+jump END equal repetitions 0
+
+
+ubind @poly
+
+# is controlled?
+
+sensor ctrl @unit @controller
+jump CTRL_CHECK_PASSED equal ctrl unit # not free
+jump END ctrl notEqual ctrl this # not me either
+
+CTRL_CHECK_PASSED: set _ "1"
+
+
+# pick up or drop off
+sensor itemcCo @unit @totalItems
+jump PICK_UP equal itemcCo 0
+jump DROP_OFF equal 0 0
+
+
+DROP_OFF: set procName "Drop off"
+    # check that vault is not full
+    sensor carryItem @unit @firstItem
+    sensor resourceStored targetVault carryItem
+    jump RETURN_TO_BASE greaterThan resourceStored 950
+
+    # actually drop off
+    sensor vaultX targetVault @x
+    sensor vaultY targetVault @y
+    sensor totalItems @unit @totalItems
+    ucontrol approach vaultX vaultY 3 0 0
+    ucontrol itemDrop targetVault totalItems 0 0 0
+    jump TRANSPORT_RESOURCES equal 0 0
+
+
+PICK_UP: set procName "Pick up"
+    jump END equal resToDeliver null
+    ucontrol approach coreX coreY 7 0 0
+    ucontrol itemTake targetCore resToDeliver 222 0 0
+    jump TRANSPORT_RESOURCES equal 0 0
+
+# END_TRANSPORT_RESOURCES: op sub repetitions repetitions 1
+#     jump TRANSPORT_RESOURCES greaterThan repetitions 0
+#     jump END equal 0 0
+
+
+RETURN_TO_BASE: ucontrol approach coreX coreY 7 0 0
+    sensor totalItems @unit @totalItems
+    ucontrol itemDrop targetCore totalItems 0 0 0
+    jump END equal 0 0
+
+
+END: end

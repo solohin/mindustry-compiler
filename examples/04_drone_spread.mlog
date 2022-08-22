@@ -26,6 +26,7 @@ set targetVault null
 
 STARTLOOP vaultNum 5 # 0 to 15
     STARTLOOP resNum 16 # 0 to 15
+        jump SKIPRES$resNum equal vault$vaultNum null
         sensor resourceStored vault$vaultNum resource$resNum
         sensor atCore targetCore resource$resNum
         jump SKIPRES$resNum lessThan atCore stopDrawingFromCore
@@ -35,7 +36,6 @@ STARTLOOP vaultNum 5 # 0 to 15
         set lowestResourceName resource$resNum
         SKIPRES$resNum: set _ true # empty statement just to skip 
     ENDLOOP resNum
-    
 ENDLOOP vaultNum
 
 
