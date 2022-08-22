@@ -1,0 +1,65 @@
+set resource0 @copper
+set resource1 @lead
+set minRes 500
+sensor resourceStored vault1 resource0
+jump 7 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource0
+set _ true # empty statement just to skip
+sensor resourceStored vault1 resource1
+jump 12 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource1
+set _ true # empty statement just to skip
+sensor resourceStored vault1 resource2
+jump 17 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource2
+set _ true # empty statement just to skip
+sensor resourceStored vault1 resource3
+jump 22 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource3
+set _ true # empty statement just to skip
+sensor resourceStored vault1 resource4
+jump 27 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource4
+set _ true # empty statement just to skip
+sensor resourceStored vault1 resource5
+jump 32 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource5
+set _ true # empty statement just to skip
+sensor resourceStored vault1 resource6
+jump 37 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource6
+set _ true # empty statement just to skip
+sensor resourceStored vault1 resource7
+jump 42 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource7
+set _ true # empty statement just to skip
+set resToDeliver lowestResourceName
+set repetitions 3
+ubind @poly
+sensor itemcCo @unit @totalItems
+jump 56 equal itemcCo 0
+jump 49 equal 0 0
+set procName "Drop off"
+sensor vaultX vault1 @x
+sensor vaultY vault1 @y
+sensor totalItems @unit @totalItems
+ucontrol approach vaultX vaultY 3 0 0
+ucontrol itemDrop vault1 totalItems 0 0 0
+jump 62 equal 0 0
+set procName "Pick up"
+jump 64 equal resToDeliver null
+ulocate building core false resToDeliver coreX coreY found targetCore
+ucontrol approach coreX coreY 7 0 0
+ucontrol itemTake targetCore resToDeliver 222 0 0
+jump 62 equal 0 0
+op sub repetitions repetitions 1
+jump 45 greaterThan repetitions 0
+end

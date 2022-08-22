@@ -1,0 +1,53 @@
+set resource0 @coal
+set resource1 @sand
+set resource2 @sand
+set resource3 @sand
+set resource4 @sand
+set resource5 @sand
+set resource6 @sand
+set resource7 @sand
+set minRes 999999
+sensor resourceStored vault1 resource0
+jump 13 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource0
+set _ true # empty statement just to skip
+sensor resourceStored vault1 resource1
+jump 18 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource1
+set _ true # empty statement just to skip
+sensor resourceStored vault1 resource2
+jump 23 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource2
+set _ true # empty statement just to skip
+sensor resourceStored vault1 resource3
+jump 28 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource3
+set _ true # empty statement just to skip
+sensor resourceStored vault1 resource4
+jump 33 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource4
+set _ true # empty statement just to skip
+sensor resourceStored vault1 resource5
+jump 38 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource5
+set _ true # empty statement just to skip
+sensor resourceStored vault1 resource6
+jump 43 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource6
+set _ true # empty statement just to skip
+sensor resourceStored vault1 resource7
+jump 48 greaterThan resourceStored minRes
+set minRes resourceStored
+set lowestResourceName resource7
+set _ true # empty statement just to skip
+set resToDeliver lowestResourceName
+control config unloader1 resToDeliver 0 0 0
+control config unloader2 resToDeliver 0 0 0
+control config unloader3 resToDeliver 0 0 0
