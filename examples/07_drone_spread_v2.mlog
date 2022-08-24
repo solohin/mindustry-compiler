@@ -1,0 +1,46 @@
+CHECK_VAULT_RES: set proc "CHECK_VAULT_RES"
+                sensor resName sorter1 @config # which resource is stored
+                sensor resStored vault1 resName # how much of it
+                jump UNBIND resStored greaterThan 600
+
+NEXT_UNIT:      set proc "NEXT_UNIT"
+                ubind @mega
+                sensor ctrl @unit @controlled
+                jump NEXT_UNIT notEqual ctrl 0
+
+FIND_CORE:      set proc "FIND_CORE"
+                ulocate building core false @copper coreX CoreY found core 
+
+DROP_OFF_WRONG: set proc "DROP_OFF"
+                ucontrol move coreX CoreY 4 0 0
+                sensor itemsOnHand @unit @totalItems
+                ucontrol itemDrop core itemsOnHand 0 0 0
+                sensor itemsOnHand @unit @totalItems
+                jump DROP_OFF_WRONG greaterThan itemsOnHand 0
+
+PICK_UP:        set proc "PICK_UP"
+                ucontrol move coreX CoreY 4 0 0
+                sensor unitCapacity @unit @itemCapacity
+                ucontrol itemTake core resName unitCapacity 0 0
+                sensor itemsOnHand @unit @totalItems
+                jump PICK_UP notEqual itemsOnHand unitCapacity
+
+FIND_VAULT:     set proc "FIND_VAULT"
+                sensor vaultX vault1 @x
+                sensor vaultY vault1 @y
+
+DROP_OFF:       set proc "DROP_OFF"
+                ucontrol move vaultX vaultY 4 0 0
+                sensor itemsOnHand @unit @totalItems
+                ucontrol itemDrop vault1 itemsOnHand 0 0 0
+                sensor itemsOnHand @unit @totalItems
+                jump DROP_OFF greaterThan itemsOnHand 0
+
+CHECK_REPEAT:   set proc "CHECK_REPEAT"
+                sensor resStored vault1 resName
+                jump DROP_OFF_WRONG greaterThan 800 resStored
+
+UNBIND:         set proc "UNBIND"
+                ucontrol unbind 0 0 0 0 0
+
+jump 0 equal 1 1

@@ -1,0 +1,13 @@
+ubind @mega
+sensor ctrl @unit @controlled
+jump 4 strictEqual ctrl null
+jump 0 notEqual ctrl this
+set label "control check passed"
+ulocate building core false @copper coreX CoreY found core
+ucontrol approach coreX CoreY 4 0 0
+ucontrol within coreX CoreY 6 isNearCore 0
+jump 6 notEqual isNearCore true
+ucontrol move @thisx @thisy 5 0 0
+ucontrol within @thisx @thisy 10 isNearProc 0
+jump 9 notEqual isNearProc true
+ucontrol unbind 0 0 0 0 0

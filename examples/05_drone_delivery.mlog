@@ -25,22 +25,8 @@ set minRes 600
 set stopDrawingFromCore 500
 
 # find core
+ubind @poly
 ulocate building core false @copper coreX coreY found targetCore
-jump CORE_FOUND equal found true
-# fallback 
-set targetCore nucleus1
-jump CORE_FOUND_THROUGH_LINK notEqual targetCore null
-set targetCore foundation1
-jump CORE_FOUND_THROUGH_LINK notEqual targetCore null
-# oh fuck
-set message "No core found"
-jump END equal 1 1
-CORE_FOUND_THROUGH_LINK: set message "Core found through link"
-sensor coreX targetCore @x
-sensor coreY targetCore @y
-
-
-CORE_FOUND: set _ "1"
 
 STARTLOOP resNum 16 # 0 to 15
     sensor resourceStored targetVault resource$resNum
@@ -59,28 +45,25 @@ jump END equal resToDeliver null
 
 # transport resources
 
-set repetitions 10
+set repetitions 50
 
-TRANSPORT_RESOURCES: set _ "1"
+TRANSPORT_RESOURCES: ubind @poly
+
 op sub repetitions repetitions 1 
 jump END equal repetitions 0
 
 
-ubind @poly
-
 # is controlled?
 
 sensor ctrl @unit @controller
-jump CTRL_CHECK_PASSED equal ctrl unit # not free
+jump PICK_UP_OR_DROP_OFF equal ctrl unit # not free
 jump END ctrl notEqual ctrl this # not me either
-
-CTRL_CHECK_PASSED: set _ "1"
 
 
 # pick up or drop off
-sensor itemcCo @unit @totalItems
-jump PICK_UP equal itemcCo 0
-jump DROP_OFF equal 0 0
+PICK_UP_OR_DROP_OFF: sensor itemcCo @unit @totalItems
+    jump PICK_UP equal itemcCo 0
+    jump DROP_OFF equal 0 0
 
 
 DROP_OFF: set procName "Drop off"
@@ -103,11 +86,6 @@ PICK_UP: set procName "Pick up"
     ucontrol approach coreX coreY 7 0 0
     ucontrol itemTake targetCore resToDeliver 222 0 0
     jump TRANSPORT_RESOURCES equal 0 0
-
-# END_TRANSPORT_RESOURCES: op sub repetitions repetitions 1
-#     jump TRANSPORT_RESOURCES greaterThan repetitions 0
-#     jump END equal 0 0
-
 
 RETURN_TO_BASE: ucontrol approach coreX coreY 7 0 0
     sensor totalItems @unit @totalItems
