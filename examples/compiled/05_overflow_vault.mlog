@@ -1,0 +1,106 @@
+set resource0 @copper
+set resource1 @lead
+set resource2 @metaglass
+set resource3 @graphite
+set resource4 @sand
+set resource5 @coal
+set resource6 @titanium
+set resource7 @thorium
+set resource8 @scrap
+set resource9 @silicon
+set resource10 @phase-fabric
+set resource11 @surge-alloy
+set resource12 @spore-pod
+set resource13 @blast-compound
+set resource14 @pyratite
+set resource15 @plastanium
+set selectedResource null
+control enabled unloader1 false 0 0 0
+jump 104 equal resource0 null
+sensor resCount vault1 resource0
+jump 22 greaterThan 999 resCount
+set selectedResource resource0
+set _ true
+jump 104 equal resource1 null
+sensor resCount vault1 resource1
+jump 27 greaterThan 999 resCount
+set selectedResource resource1
+set _ true
+jump 104 equal resource2 null
+sensor resCount vault1 resource2
+jump 32 greaterThan 999 resCount
+set selectedResource resource2
+set _ true
+jump 104 equal resource3 null
+sensor resCount vault1 resource3
+jump 37 greaterThan 999 resCount
+set selectedResource resource3
+set _ true
+jump 104 equal resource4 null
+sensor resCount vault1 resource4
+jump 42 greaterThan 999 resCount
+set selectedResource resource4
+set _ true
+jump 104 equal resource5 null
+sensor resCount vault1 resource5
+jump 47 greaterThan 999 resCount
+set selectedResource resource5
+set _ true
+jump 104 equal resource6 null
+sensor resCount vault1 resource6
+jump 52 greaterThan 999 resCount
+set selectedResource resource6
+set _ true
+jump 104 equal resource7 null
+sensor resCount vault1 resource7
+jump 57 greaterThan 999 resCount
+set selectedResource resource7
+set _ true
+jump 104 equal resource8 null
+sensor resCount vault1 resource8
+jump 62 greaterThan 999 resCount
+set selectedResource resource8
+set _ true
+jump 104 equal resource9 null
+sensor resCount vault1 resource9
+jump 67 greaterThan 999 resCount
+set selectedResource resource9
+set _ true
+jump 104 equal resource10 null
+sensor resCount vault1 resource10
+jump 72 greaterThan 999 resCount
+set selectedResource resource10
+set _ true
+jump 104 equal resource11 null
+sensor resCount vault1 resource11
+jump 77 greaterThan 999 resCount
+set selectedResource resource11
+set _ true
+jump 104 equal resource12 null
+sensor resCount vault1 resource12
+jump 82 greaterThan 999 resCount
+set selectedResource resource12
+set _ true
+jump 104 equal resource13 null
+sensor resCount vault1 resource13
+jump 87 greaterThan 999 resCount
+set selectedResource resource13
+set _ true
+jump 104 equal resource14 null
+sensor resCount vault1 resource14
+jump 92 greaterThan 999 resCount
+set selectedResource resource14
+set _ true
+jump 104 equal resource15 null
+sensor resCount vault1 resource15
+jump 97 greaterThan 999 resCount
+set selectedResource resource15
+set _ true
+jump 16 equal selectedResource null
+control config unloader1 selectedResource 0 0 0
+control enabled unloader1 true 0 0 0
+wait 0.2
+control enabled unloader1 false 0 0 0
+end
+set dbg "RES NOT found"
+wait 60

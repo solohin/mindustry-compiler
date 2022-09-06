@@ -1,7 +1,0 @@
-ubind @mega
-sensor vaultX vault1 @x
-sensor vaultY vault1 @y
-ucontrol approach vaultX vaultY 2 0 0
-wait 0.2
-ucontrol itemDrop vault1 1 0 0 0
-ucontrol approach vaultX vaultY 6 0 0

@@ -1,0 +1,76 @@
+set myUnitType @mega
+set range 6
+
+# set resources
+set resource0 @copper 
+set resource1 @lead 
+set resource2 @sand
+set resource3 @scrap
+set resource4 @coal
+set resource5 @titanium
+
+PRE_START:      ubind myUnitType
+                ulocate building core false resToDeliver coreX coreY found targetCore # locate core
+
+                # approach core
+                PRE_START_APPROACH_CORE: ucontrol move coreX coreY range 0 0 
+                ucontrol within coreX coreY range isNearby 0
+                jump PRE_START_APPROACH_CORE equal isNearby false
+                
+                STARTLOOP res 6 # 0 to 5
+                    jump NEXTRES$res equal resource$res null # nothing to do if null
+                    ulocate ore core true resource$res mineX$res mineY$res resFound building # find ore
+                    jump NEXTRES$res equal resFound true
+                    DELETE_RES$res: set resource$res null
+                    NEXTRES$res: set _ ""
+                ENDLOOP res
+
+
+FIND_LOWEST_RES:set minResCount 99999999
+                STARTLOOP resNum 6 # 0 to 5
+                    jump SKIPRES$resNum equal resource$resNum null
+                    sensor resCountCore targetCore resource$resNum
+                    jump SKIPRES$resNum greaterThan resCountCore minResCount
+                    set minResCount resCountCore
+                    set minResName resource$resNum
+                    set mineX mineX$resNum
+                    set mineY mineY$resNum
+                    SKIPRES$resNum: set _ true # empty statement just to skip 
+                ENDLOOP resNum
+
+set resToDeliver minResName 
+
+set repetitions 1000
+
+SELECT_UNIT:    ubind myUnitType
+
+
+MINE:           set procName "MINE_check"
+                sensor totalItems @unit @totalItems
+                sensor firstItem @unit @firstItem
+                sensor itemCapacity @unit @itemCapacity
+
+                jump ITEM_CHECK_PASSED equal firstItem null
+                jump DROP_OFF equal totalItems itemCapacity
+                jump DROP_OFF notEqual firstItem resToDeliver
+
+                ITEM_CHECK_PASSED: ucontrol within mineX mineY range isNearby 0
+                jump SKIP_APPROACH equal isNearby true
+                
+                ucontrol approach mineX mineY range 0 0
+
+                SKIP_APPROACH: ucontrol mine mineX mineY 0 0 0
+                jump NEXT_LOOP equal 1 1
+                
+
+DROP_OFF:       set procName "DROP_OFF check"
+                sensor totalItems @unit @totalItems
+                jump NEXT_LOOP equal totalItems 0
+                set procName "DROP_OFF"
+
+                ucontrol move coreX coreY range 0 0
+                ucontrol itemDrop targetCore totalItems 0 0 0
+
+NEXT_LOOP:      op sub repetitions repetitions 1 
+                jump SELECT_UNIT greaterThan repetitions 0
+                jump FIND_LOWEST_RES equal 1 1

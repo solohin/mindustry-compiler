@@ -1,0 +1,130 @@
+sensor vaultX vault1 @x
+sensor vaultY vault1 @y
+
+CHECK_VAULT_RES: set proc "CHECK_VAULT_RES"
+                sensor resName sorter1 @config # which resource is stored
+                sensor retResName sorter2 @config
+
+                sensor resStored vault1 resName # how much of it
+
+                sensor retResStored vault1 retResName
+                jump NEXT_UNIT greaterThan retResStored 900 # emergency unload if over 900
+
+                jump CHECK_VAULT_RES greaterThan resStored 700
+                jump CHECK_VAULT_RES equal vault1 null
+
+NEXT_UNIT:      set proc "NEXT_UNIT"
+                op rand randWait 1.0 b
+                wait randWait
+
+                ubind @zenith
+                sensor ctrl @unit @controlled
+                jump NEXT_UNIT notEqual ctrl 0
+                ucontrol move 0 0 4 0 0 # just to label unit controlled
+
+                sensor retResStored vault1 retResName
+                jump EMERG_UNLOAD greaterThan retResStored 900 # emergency unload if over 900
+
+FIND_CORE:      set proc "FIND_CORE"
+                ulocate building core false @copper coreX CoreY coreFound core
+
+DROP_OFF_WRONG: set proc "DROP_OFF_WRONG"
+                ucontrol move coreX CoreY 4 0 0
+                jump NEXT_UNIT equal @unit null
+                sensor itemsOnHand @unit @totalItems
+                ucontrol itemDrop core itemsOnHand 0 0 0
+                wait 0.1
+                sensor itemsOnHand @unit @totalItems
+                jump DROP_OFF_WRONG greaterThan itemsOnHand 0
+
+PICK_UP:        set proc "PICK_UP"
+
+                sensor resStored vault1 resName
+                jump CHECK_VAULT_RES greaterThan resStored 700
+
+                # chill if nothing available in core
+                sensor resAtCore core resName
+                jump CHILL greaterThan 300 resAtCore
+
+                # next unit if controller is not me
+                sensor ctrl @unit @controlled
+                jump NEXT_UNIT notEqual ctrl @this
+
+                sensor resName sorter1 @config
+                ucontrol approach coreX CoreY 2 0 0
+                sensor unitCapacity @unit @itemCapacity
+                sensor resName sorter1 @config
+                ucontrol itemTake core resName unitCapacity 0 0
+                wait 0.1
+                sensor itemsOnHand @unit @totalItems
+                jump PICK_UP notEqual itemsOnHand unitCapacity
+
+DROP_OFF:       set proc "DROP_OFF"
+
+                # wrong item, probably stolen unit
+                sensor firstItem @unit @firstItem
+                jump NEXT_UNIT notEqual firstItem resName
+
+                # if not we are controlling, skip
+                sensor ctrl @unit @controller
+                jump NEXT_UNIT notEqual ctrl @this
+
+                sensor resStored vault1 resName # how much of it
+                jump 0 equal resStored 1000
+                jump 0 equal vaultX null
+                ucontrol move vaultX vaultY 4 0 0
+                ucontrol itemDrop vault1 itemsOnHand 0 0 0
+                wait 0.1
+                sensor itemsOnHand @unit @totalItems
+                jump DROP_OFF greaterThan itemsOnHand 0
+
+RET_PICK_UP:    set proc "RET_PICK_UP"
+
+                sensor ctrl @unit @controlled
+                jump NEXT_UNIT notEqual ctrl @this
+
+                # check item at sorter2 is not null
+                sensor retResName sorter2 @config
+                jump CHECK_REPEAT equal retResName null
+
+                # check vault has items
+                sensor retResStored vault1 retResName
+                jump CHECK_REPEAT greaterThan unitCapacity retResStored
+
+                ucontrol move vaultX vaultY 4 0 0
+                ucontrol itemTake vault1 retResName unitCapacity 0 0
+                sensor itemsOnHand @unit @totalItems
+                jump RET_PICK_UP notEqual itemsOnHand unitCapacity
+
+CHECK_REPEAT:   set proc "CHECK_REPEAT"
+                sensor resName sorter1 @config
+                sensor resStored vault1 resName
+                jump DROP_OFF_WRONG greaterThan 800 resStored
+
+UNBIND:         set proc "UNBIND"
+
+                # drop off first
+                ulocate building core false @copper coreX CoreY coreFound core
+                ucontrol move coreX CoreY 4 0 0
+                sensor itemsOnHand @unit @totalItems
+                ucontrol itemDrop core itemsOnHand 0 0 0
+                jump UNBIND greaterThan itemsOnHand 0
+                
+                ucontrol unbind 0 0 0 0 0
+
+jump 0 equal 1 1
+
+
+# unload to core
+EMERG_UNLOAD:   set proc "EMERG_UNLOAD"
+                ulocate building core false @copper coreX CoreY coreFound core
+                ucontrol move coreX CoreY 4 0 0
+                sensor itemsOnHand @unit @totalItems
+                ucontrol itemDrop core itemsOnHand 0 0 0
+                jump EMERG_UNLOAD greaterThan itemsOnHand 0
+                jump RET_PICK_UP equal 1 1
+
+CHILL:          set proc "CHILL"
+                ucontrol unbind 0 0 0 0 0
+                wait 10
+                jump CHECK_VAULT_RES equal 1 1
