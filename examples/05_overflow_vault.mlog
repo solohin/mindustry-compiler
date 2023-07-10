@@ -15,27 +15,41 @@ set resource13 @blast-compound
 set resource14 @pyratite
 set resource15 @plastanium
 
-START:  set selectedResource null
 control enabled unloader1 false 0 0 0
+control enabled unloader2 false 0 0 0
+control enabled unloader3 false 0 0 0
+
+START: set resourceOver990 null
 
 STARTLOOP resNum 16 # 0 to 15
     jump resource_not_found equal resource$resNum null
 
     sensor resCount vault1 resource$resNum
 
-    jump SKIPRES$resNum greaterThan 999 resCount
-    set selectedResource resource$resNum
+    jump SKIPRES$resNum greaterThan 950 resCount
+    
+    set resourceOver990 resource$resNum
+    
     SKIPRES$resNum:     set _ true 
 ENDLOOP resNum
 
-jump START equal selectedResource null
+jump DISABLE_UNLOADERS equal resourceOver990 null
 
-control config unloader1 selectedResource 0 0 0
-control enabled unloader1 true 0 0 0
-wait 0.2
-control enabled unloader1 false 0 0 0
 
-end
+ENABLE_UNLAODERS:   control enabled unloader1 true 0 0 0
+                    control enabled unloader2 true 0 0 0
+                    control enabled unloader3 true 0 0 0
+                    control config unloader1 resourceOver990 0 0 0
+                    control config unloader2 resourceOver990 0 0 0
+                    control config unloader3 resourceOver990 0 0 0
+                    jump START equal 1 1
+
+DISABLE_UNLOADERS:  control enabled unloader1 false 0 0 0
+                    control enabled unloader2 false 0 0 0
+                    control enabled unloader3 false 0 0 0
+
+
+jump START equal 1 1
 
 resource_not_found: set dbg "RES NOT found"
                     wait 60

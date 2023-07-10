@@ -5,7 +5,8 @@ set range 4
 set resource0 @copper 
 set resource1 @lead 
 set resource2 @sand
-set resource3 @scrap
+#set resource3 @scrap
+set resource3 @coal
 set resource4 @coal
 # set resource5 @titanium
 

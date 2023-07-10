@@ -3,7 +3,7 @@ set range 4
 set resource0 @copper
 set resource1 @lead
 set resource2 @sand
-set resource3 @scrap
+set resource3 @coal
 set resource4 @coal
 ubind myUnitType
 ulocate building core false resToDeliver coreX coreY found targetCore # locate core

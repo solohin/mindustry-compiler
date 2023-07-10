@@ -1,0 +1,7 @@
+sensor en switch1 @enabled
+sensor resName sorter1 @config
+
+STARTLOOP switchNum 30 # 0 to 15
+    control enabled unloader$switchNum en 0 0 0
+    control config unloader$switchNum resName 0 0 0
+ENDLOOP switchNum
