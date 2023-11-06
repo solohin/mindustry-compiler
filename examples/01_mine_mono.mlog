@@ -1,4 +1,4 @@
-set myUnitType @mega
+set myUnitType @mono
 set range 3
 
 # set resources
